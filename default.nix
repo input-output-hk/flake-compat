@@ -193,7 +193,6 @@ in
       result
       // (if result ? defaultPackage.${system} then { default = result.defaultPackage.${system}; } else {});
 
-    shellNix =
-      defaultNix
-      // (if result ? devShell.${system} then { default = result.devShell.${system}; } else {});
+    shellNix = if result ? devShell.${system} then result.devShell.${system} // (result.devShells.${system} or {})
+      else ((defaultNix.default or {}) // (result.devShells.${system} or {}));
   }

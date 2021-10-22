@@ -5,7 +5,7 @@
 # containing 'defaultNix' (to be used in 'default.nix'), 'shellNix'
 # (to be used in 'shell.nix').
 
-{ src, pkgs ? {}, system ? builtins.currentSystem or "unknown-system" }:
+{ src, pkgs ? {}, system ? builtins.currentSystem or "unknown-system", override-inputs ? {} }@args:
 
 let
 
@@ -143,7 +143,7 @@ let
           flake = import (sourceInfo + (if subdir != "" then "/" else "") + subdir + "/flake.nix");
 
           inputs = builtins.mapAttrs
-            (inputName: inputSpec: allNodes.${resolveInput inputSpec})
+            (inputName: inputSpec: override-inputs.${inputName} or allNodes.${resolveInput inputSpec})
             (node.inputs or {});
 
           # Resolve a input spec into a node name. An input spec is
@@ -194,5 +194,6 @@ in
 
     shellNix =
       defaultNix
-      // (if result ? devShell.${system} then { default = result.devShell.${system}; } else {});
+      // (if result ? devShell.${system} then { default = result.devShell.${system}; } else {})
+      // (result.devShells.${system} or {});
   }

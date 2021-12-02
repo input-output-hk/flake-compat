@@ -17,7 +17,7 @@ let
     info:
     if info.type == "github" then
       { outPath =
-          (pkgs.fetchzip or fetchTarball)
+          (if (builtins.elem info.owner ["NixOS" "input-output-hk"]) then fetchTarball else pkgs.fetchzip or fetchTarball)
             ({ url = "https://api.${info.host or "github.com"}/repos/${info.owner}/${info.repo}/tarball/${info.rev}"; }
              // (if info ? narHash then { sha256 = info.narHash; } else {})
             );

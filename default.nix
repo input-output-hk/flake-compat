@@ -32,7 +32,7 @@ let
           (pkgs.fetchgit or builtins.fetchGit)
             ({ url = info.url; }
              // (if info ? rev then { inherit (info) rev; } else {})
-             // (if info ? ref then { inherit (info) ref; } else {})
+             // (if info ? ref && !(pkgs ? fetchgit) then { inherit (info) ref; } else {})
              // (if info ? narHash then { sha256 = info.narHash; } else {})
             );
         lastModified = info.lastModified;
